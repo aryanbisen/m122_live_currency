@@ -1,5 +1,8 @@
+from flask import Flask, render_template
 from requests import Session
 import APIKey
+
+app = Flask(__name__)
 
 class CMC:
     def __init__(self, token):
@@ -17,5 +20,10 @@ class CMC:
 
 cmc = CMC(APIKey.API_KEY)
 
-btc_price = cmc.getPrice('BTC')['data']['BTC']['quote']['USD']['price']
-print(f"Bitcoin price: ${btc_price:.2f} USD")
+@app.route("/")
+def home():
+    btc_price = cmc.getPrice('BTC')['data']['BTC']['quote']['USD']['price']
+    return render_template("index.html", btc_price=btc_price)
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5500)
