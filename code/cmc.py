@@ -20,5 +20,5 @@ class CMC:
 
 cmc = CMC(APIKey.API_KEY)
 
-btc_price = cmc.getPrice('BTC')
-pp(cmc.getPrice('BTC'))
+btc_price = cmc.getPrice('BTC')['BTC'][0]['quote']['USD']['price']
+print(f"Bitcoin price: ${btc_price:.2f} USD")
