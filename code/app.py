@@ -1,9 +1,11 @@
 from flask import Flask, render_template
 from requests import Session
-import APIKey
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
 
+load_dotenv()
 class CMC:
     def __init__(self, token):
         self.apiurl = 'https://pro-api.coinmarketcap.com'
@@ -18,7 +20,7 @@ class CMC:
         data = r.json()
         return data
 
-cmc = CMC(APIKey.API_KEY)
+cmc = CMC(os.getenv('API_KEY'))
 
 @app.route("/")
 def home():
@@ -26,4 +28,4 @@ def home():
     return render_template("index.html", btc_price=btc_price)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5500)
+    app.run(debug=bool(os.getenv('DEBUG')), port=int(os.getenv('PORT')))
