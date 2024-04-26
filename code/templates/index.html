@@ -6,20 +6,81 @@
     <title>Bitcoin Price</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
+            background-color: #161b22; /* Dark background color */
+            color: #ffffff; /* Light text color */
+            margin: 0;
+            padding: 0;
         }
-        h1 {
-            color: #333;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .price {
+        h1, h2 {
+            color: #ffffff; /* Light heading text color */
+            margin-bottom: 20px;
+        }
+        .price, .currency-price {
+            font-size: 36px;
+            color: #ffcb43; /* Accent color */
+            margin-bottom: 40px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            background-color: #243447; /* Dark list item background color */
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        li:hover {
+            transform: translateY(-5px);
+        }
+        .currency-name {
+            font-weight: bold;
             font-size: 24px;
-            color: #007bff;
+            color: #ffcb43; /* Accent color */
+        }
+        .currency-symbol {
+            font-size: 18px;
+            color: #90a4ae; /* Dimmed text color */
+        }
+        .currency-price {
+            font-size: 28px;
+            color: #ffffff; /* Light text color */
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #90a4ae; /* Dimmed text color */
         }
     </style>
 </head>
 <body>
-    <h1>Current Bitcoin Price</h1>
-    <p class="price">${{ "{:.2f}".format(btc_price) }}</p>
+    <div class="container">
+        <h1>Current Bitcoin Price</h1>
+        <p class="price">${{ "{:.2f}".format(btc_price) }}</p>
+        <h2>Top 5 Cryptocurrencies</h2>
+        <ul>
+            {% for currency in top_currencies %}
+            <li>
+                <span class="currency-name">{{ currency.name }}</span>
+                <span class="currency-symbol">({{ currency.symbol }})</span><br>
+                <span class="currency-price">${{ "{:.2f}".format(currency.price) }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="footer">
+        Powered by CoinMarketCap API
+    </div>
 </body>
 </html>
