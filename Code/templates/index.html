@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Currency</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #0f0f0f;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      color: #007bff;
+      font-size: 36px;
+      margin-top: 50px;
+    }
+     .price {
+      font-size: 48px;
+      color: #66ff66;
+      margin-top: 20px;
+      text-shadow: 2px 2px 4px #000000;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 30px;
+    }
+    li {
+      margin-bottom: 20px;
+      transition: background-color 0.3s;
+    }
+    li:hover {
+      background-color: #1e1e1e;
+    }
+    li span {
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Current Bitcoin Price</h1>
+  <p class="price">${{ "{:.2f}".format(btc_price) }}</p>
+  <h1>Top 5 cryptocurrencies</h1>
+  <ul>
+    {% for currency in top_currencies %}
+    <li>
+      <span>{{ currency.name }}</span> ({{ currency.symbol }}): ${{ "{:.2f}".format(currency.quote.USD.price) }}
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
