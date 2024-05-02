@@ -1,8 +1,10 @@
-# Import required modules
 from flask import Flask, render_template
 from requests import Session
 from dotenv import load_dotenv
 import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # Create Flask app instance
 app = Flask(__name__)
@@ -39,12 +41,40 @@ class CMC:
             top_currencies.append({'name': name, 'symbol': symbol, 'price': price})
         return top_currencies
 
+def send_email(receiver_email, message):
+    smtp_server = "smtp.gmail.com"
+    port = 587
+    email = os.getenv('EMAIL')
+    password = os.getenv('PASSWORD')
+    
+    msg = MIMEMultipart()
+    msg['From'] = email
+    msg['To'] = receiver_email
+    msg['Subject'] = "Top Cryptocurrencies Prices"
+
+    msg.attach(MIMEText(message, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, port)
+        server.starttls()
+        server.login(email, password)
+        server.sendmail(email, receiver_email, msg.as_string())
+        server.quit()
+        print("Email sent successfully")
+    except Exception as e:
+        print("Error sending email:", e)
+
 cmc = CMC(os.getenv('API_KEY'))
 
 @app.route("/")
 def home():
         btc_price = cmc.getPrice('BTC')['data']['BTC']['quote']['USD']['price']
         top_currencies = cmc.getTopCurrencies()
+        email_message = f"Current Bitcoin Price\n${btc_price}\n\nTop 5 Cryptocurrencies\n"
+        for currency in top_currencies:
+            email_message += f"{currency['name']}: ${currency['price']}\n"
+        receiver_email = os.getenv('RECEIVER_EMAIL')
+        send_email(receiver_email, email_message)
         return render_template("index.html", btc_price=btc_price, top_currencies=top_currencies)
 
 if __name__ == '__main__':
