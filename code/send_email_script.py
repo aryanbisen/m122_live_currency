@@ -1,13 +1,11 @@
-from flask import Flask, render_template
-from requests import Session
-from dotenv import load_dotenv
 import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from requests import Session
+from dotenv import load_dotenv
+import datetime
 
-# Create Flask app instance
-app = Flask(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
@@ -59,24 +57,22 @@ def send_email(receiver_email, message):
         server.login(email, password)
         server.sendmail(email, receiver_email, msg.as_string())
         server.quit()
-        print("Email sent successfully")
+        log_message = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Email sent successfully"
+        with open('/mnt/c/Github_repositories/TBZ/m122_live_currency/code/log.txt', 'a') as log_file:
+            log_file.write(log_message + '\n')
+            
     except Exception as e:
         print("Error sending email:", e)
 
-cmc = CMC(os.getenv('API_KEY'))
+def main():
+    cmc = CMC(os.getenv('API_KEY'))
+    btc_price = cmc.getPrice('BTC')['data']['BTC']['quote']['USD']['price']
+    top_currencies = cmc.getTopCurrencies()
+    email_message = f"Current Bitcoin Price\n${btc_price}\n\nTop 5 Cryptocurrencies\n"
+    for currency in top_currencies:
+        email_message += f"{currency['name']}: ${currency['price']}\n"
+    receiver_email = os.getenv('RECEIVER_EMAIL')
+    send_email(receiver_email, email_message)
 
-# Send email when the program starts
-btc_price = cmc.getPrice('BTC')['data']['BTC']['quote']['USD']['price']
-top_currencies = cmc.getTopCurrencies()
-email_message = f"Current Bitcoin Price\n${btc_price}\n\nTop 5 Cryptocurrencies\n"
-for currency in top_currencies:
-    email_message += f"{currency['name']}: ${currency['price']}\n"
-receiver_email = os.getenv('RECEIVER_EMAIL')
-send_email(receiver_email, email_message)
-
-@app.route("/")
-def home():
-    return render_template("index.html", btc_price=btc_price, top_currencies=top_currencies)
-
-if __name__ == '__main__':
-    app.run(debug=bool(os.getenv('DEBUG')), port=int(os.getenv('PORT')))
+if __name__ == "__main__":
+    main()
