@@ -37,6 +37,9 @@ class CMC:
         data = r.json()['data']['BTC'][0]['quote']['USD']['price']
         return data
 
+
+
+
 cmc = CMC(os.getenv("API_KEY"))
 print(os.getenv("API_KEY"))
 
